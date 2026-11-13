@@ -41,7 +41,7 @@ These rules are examples only. The real list will come from the team's SDLC. The
 | R07 | Security finding past remediation SLA | Vulnerability mgmt | CC7.1 | Critical |
 | R08 | Deployed without release approval | Release approval | CC8.1 | Medium |
 
-\*The mapping to SOC 2 Trust Services Criteria (2017 TSC, 2022 points of focus) is a working assumption. Confirm it with your auditor or GRC team. The AICPA has also proposed revised criteria; the exposure draft was published in October 2026, so re-check the mapping once that's finalized.
+\*The mapping to SOC 2 Trust Services Criteria (2017 TSC, 2022 points of focus) is a working assumption. Confirm it with our security and compliance owners (whoever works with the SOC 2 auditors). The AICPA has also proposed revised criteria; the exposure draft was published in October 2026, so re-check the mapping once that's finalized.
 
 ## Planned architecture (POC)
 
@@ -74,11 +74,11 @@ Design principles:
 - [ ] Rules engine reading `rules/*.yaml`
 - [ ] Persist snapshots and findings
 - [ ] Wire the prototype UI to real findings
-- [ ] Auth and hosting approved by security/GRC
+- [ ] Auth and hosting approved by our security and compliance owners
 
 ## Security and data handling
 
-Get approval from security/GRC before you run this against real repos. In particular:
+Get approval from our security and compliance owners before you run this against real repos. In particular:
 - Where the tool runs, and what token scopes it uses (read-only, least privilege).
 - That no secrets are committed. `.env` files are git-ignored; use `.env.example` for templates.
 - That ticket content may contain sensitive data. Don't send it to outside services without approval.
