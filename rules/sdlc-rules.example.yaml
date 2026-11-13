@@ -1,0 +1,94 @@
+# Example SDLC rules — PLACEHOLDERS.
+# Replace with the gates from your actual SDLC. Criteria tags are a working
+# assumption (2017 TSC w/ 2022 points of focus) — confirm with your auditor.
+version: 1
+rules:
+  - id: R01
+    name: Done without a merged PR
+    gate: Traceability
+    criteria: [CC8.1]
+    severity: high
+    applies_to: { status: [Done] }
+    check: linked_pull_request.merged == true OR change_type == "No-code"
+    fix: >-
+      Link the merged PR in the ticket's Development panel, or move the ticket back
+      to In Progress if the work isn't merged. If no code change was needed, set
+      Change type to No-code and add a one-line note.
+
+  - id: R02
+    name: No independent code review
+    gate: Peer review
+    criteria: [CC8.1]
+    severity: high
+    applies_to: { pull_request: merged }
+    check: count(approvals where reviewer != author) >= 1
+    fix: >-
+      Get a review from a qualified engineer other than the author. For code
+      already merged, record a post-merge review on the PR and link it here.
+
+  - id: R03
+    name: Merged with failing or skipped checks
+    gate: Testing & CI
+    criteria: [CC8.1]
+    severity: high
+    applies_to: { pull_request: merged }
+    check: all(required_checks.conclusion == "success")
+    fix: >-
+      Re-run the required checks on the merge commit and link the passing run.
+      Confirm branch protection requires these checks so it can't recur.
+
+  - id: R04
+    name: Missing acceptance criteria
+    gate: Requirements
+    criteria: [CC8.1]
+    severity: medium
+    applies_to: { status: [In Progress, In Review, Done] }
+    check: body contains section "Acceptance criteria"
+    fix: >-
+      Add testable acceptance criteria to the ticket body and have the product
+      owner confirm them before release.
+
+  - id: R05
+    name: Risk rating not set
+    gate: Risk assessment
+    criteria: [CC3.2]
+    severity: low
+    applies_to: { status: [In Review, Done] }
+    check: field("Risk") in [Low, Medium, High]
+    fix: >-
+      Set the Risk field using the SDLC risk matrix. High risk triggers the extra
+      approval gate.
+
+  - id: R06
+    name: Emergency change without post-implementation review
+    gate: Emergency change
+    criteria: [CC8.1]
+    severity: high
+    applies_to: { type: [Emergency], status: [Done] }
+    check: post_implementation_review.linked == true within N business days  # N = placeholder
+    fix: >-
+      Hold the post-implementation review, record root cause and the approver,
+      and link the notes.
+
+  - id: R07
+    name: Security finding past remediation SLA
+    gate: Vulnerability management
+    criteria: [CC7.1]
+    severity: critical
+    applies_to: { type: [Security] }
+    sla_days: { critical: 15, high: 30 }  # placeholders
+    check: age_days <= sla_days[finding.severity] OR risk_acceptance.linked == true
+    fix: >-
+      Patch or upgrade and link the re-scan showing it's clear, or file a risk
+      acceptance signed by the system owner with a target date.
+
+  - id: R08
+    name: Deployed without release approval
+    gate: Release approval
+    criteria: [CC8.1]
+    severity: medium
+    applies_to: { deployed_to: production }
+    check: release.approval.recorded == true
+    fix: >-
+      Record after-the-fact approval from the change approver, link the
+      deployment record, and note why the approval gate was bypassed.

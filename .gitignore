@@ -1,0 +1,55 @@
+# Secrets & local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Scanner output (may contain ticket data — never commit real snapshots)
+snapshots/
+data/
+*.snapshot.json
+findings*.json
+!**/fixtures/**
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*~
