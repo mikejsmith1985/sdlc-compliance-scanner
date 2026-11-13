@@ -3,6 +3,8 @@
 Scans GitHub Projects boards against a SOC 2–aligned SDLC, flags tickets that may be out of compliance, and suggests a concrete fix for each finding. It has two views: an executive overview of how teams are doing, and a ticket workbench for working through findings.
 
 > **Status: clickable prototype, mock data only.** The tickets, teams, rules, thresholds and SOC 2 criteria tags in `prototype/` are illustrative placeholders. Nothing connects to GitHub yet.
+>
+> **The POC proposal**, covering the target state, architecture decisions, concerns and phased plan, is in [`docs/POC-proposal.md`](docs/POC-proposal.md).
 
 ## Run the prototype
 
@@ -46,47 +48,53 @@ These rules are examples only. The real list will come from the team's SDLC. The
 ## Planned architecture (POC)
 
 ```
-GitHub (Projects v2, Issues, PRs, reviews, checks, deployments, branch protection)
-        │  read-only token
+Team boards: GitHub Projects v2 + linked PRs, reviews, checks, deployments
+        │  read-only on team repos
         ▼
-  Collector ──► dated snapshot (JSON)   ← snapshots are audit evidence over time
+  Collector ──► dated snapshot (JSON)        ← tamper-resistant evidence over time
         │
         ▼
-  Rules engine  ← rules/*.yaml (SDLC gates → criteria, severity, fix template)
+  Rules engine  ← rules/*.yaml (gate per board status → criteria, severity, fix template)
         │
         ▼
-  Findings store (status, owner, exceptions + justification, audit trail)
-        │
+  Reconciler ──► compliance repo + Project   ← the only place the scanner writes
+        │         (one GitHub issue per finding: open / update / close / reopen)
         ▼
-  Dashboard (overview + workbench)
+  Dashboard (overview + workbench) reading the compliance Project
 ```
 
 Design principles:
-- **Read-only against GitHub.** The scanner never changes tickets or repos.
-- **Deterministic fixes.** Suggested fixes come from templates in the rules file, so the same finding always gets the same advice. Any AI-written wording is an optional extra layer, not the source of truth.
-- **Exceptions need a justification and an approver.** That trail is itself audit evidence.
+- **Doesn't change the teams' work.** The scanner never edits team tickets, repos or code. It writes only to its own compliance-findings repo and Project.
+- **No new ticketing system.** Findings are GitHub issues, so actions happen where teams already work and the issue timeline is the audit trail.
+- **Gates follow the workflow.** Each board status has its own criteria; a ticket in Refinement isn't held to Done's gate.
+- **Deterministic fixes.** Suggested fixes come from templates in the rules file. AI is a later, optional layer (see the proposal for its limits).
+- **Fixes are confirmed, not claimed.** A finding closes only when a later scan confirms the evidence.
+- **Exceptions need a justification and an approver.** That record is itself audit evidence.
 - **Flags, not verdicts.** The tool surfaces likely gaps. The auditor decides what counts as an exception.
 
 ## Roadmap
 
-- [ ] Replace the example rules with the real SDLC gates
-- [ ] Collector: Projects v2 items plus linked PRs, reviews and checks (GitHub GraphQL and REST)
-- [ ] Rules engine reading `rules/*.yaml`
-- [ ] Persist snapshots and findings
-- [ ] Wire the prototype UI to real findings
-- [ ] Auth and hosting approved by our security and compliance owners
+Full details are in [`docs/POC-proposal.md`](docs/POC-proposal.md).
+
+- **Demo (done):** clickable prototype with mock data.
+- **POC v1:** scheduled scan of 1–2 pilot teams; real SDLC gates as rules; findings reconciled as GitHub issues; flag only.
+- **v2:** status-change triggers; an agent that drafts fixes for gaps it can prove from records, with a person approving.
+- **v3:** auto-apply safe, provable fixes; human approval steps for everything else; consider LangGraph or a similar harness.
+
+Never automated, at any phase: code reviews, testing, approvals and risk sign-offs. Those are flagged for a person.
 
 ## Security and data handling
 
 Get approval from our security and compliance owners before you run this against real repos. In particular:
-- Where the tool runs, and what token scopes it uses (read-only, least privilege).
+- Where the tool runs, and what token scopes it uses: read on team repos, write only on the compliance repo.
 - That no secrets are committed. `.env` files are git-ignored; use `.env.example` for templates.
-- That ticket content may contain sensitive data. Don't send it to outside services without approval.
+- That ticket content may contain sensitive data. Don't send it to outside services, including any AI model, without an approved provider.
 
 ## Repo layout
 
 ```
 prototype/index.html            clickable mock-data prototype (single file, no dependencies)
 rules/sdlc-rules.example.yaml   example rule definitions (placeholders)
+docs/POC-proposal.md            POC proposal: target state, decisions, concerns, phases
 docs/                           design notes
 ```
