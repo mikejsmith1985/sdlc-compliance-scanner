@@ -1,25 +1,45 @@
 # SDLC Compliance Scanner
 
-Scans GitHub Projects boards against a SOC 2–aligned SDLC, flags tickets that may be out of compliance, and suggests a concrete fix for each finding. It has two views: an executive overview of how teams are doing, and a ticket workbench for working through findings.
+Our SOC 2 auditors don't just check that we have an SDLC; they test whether we followed it, ticket by ticket, over months. This project proposes a tool that checks our GitHub Projects boards against our SDLC continuously. It flags tickets that may be out of compliance, suggests a concrete fix for each, and gives leadership a live view of how teams are doing, so we're audit-ready all year instead of at audit time.
 
-> **Status: clickable prototype, mock data only.** The tickets, teams, rules, thresholds and SOC 2 criteria tags in `prototype/` are illustrative placeholders. Nothing connects to GitHub yet.
->
-> **The POC proposal**, covering the target state, architecture decisions, concerns and phased plan, is in [`docs/POC-proposal.md`](docs/POC-proposal.md).
+> **Status: demo with mock data.** The prototype shows how this would work in theory. Tickets, teams, rules, thresholds and SOC 2 criteria tags are illustrative placeholders, and nothing connects to GitHub yet. The next step is a formal proof of concept; see the proposal below.
 
-## Run the prototype
+## Start here (about 15 minutes)
 
-No build, no install, no network needed.
+### 1. Watch the walkthrough (5 minutes)
 
-1. Clone the repo, or download it as a ZIP.
-2. Open `prototype/index.html` in any modern browser (Edge, Chrome, Firefox).
+[![Watch the 5-minute walkthrough](media/video-poster.jpg)](https://github.com/mikejsmith1985/sdlc-compliance-scanner/raw/main/media/SDLC-Compliance-Scanner-demo.mp4)
 
-Try this demo flow:
+[Watch or download the video (MP4)](https://github.com/mikejsmith1985/sdlc-compliance-scanner/raw/main/media/SDLC-Compliance-Scanner-demo.mp4). It plays in any browser or media player. A [narration script](docs/video-script.md) is also available.
 
-1. On **Executive overview**, click one of the oldest open findings.
-2. In **Ticket workbench**, click **Mark fixed** or **Document exception**. An exception requires a written justification.
+### 2. Click through the app (5 minutes)
+
+The prototype is a single HTML file. It needs no install, no login and no internet.
+
+- **Quickest:** open [`prototype/index.html`](prototype/index.html), click **Download raw file** (the download icon at the top right of the file), then double-click the downloaded file to open it in Edge or Chrome.
+- **Or:** click **Code → Download ZIP** at the top of this page, unzip it, and open `prototype/index.html`.
+
+Suggested click-through:
+
+1. On **Executive overview**, click one of the **oldest open findings**.
+2. In **Ticket workbench**, read what the scan found and the suggested fix, then click **Mark fixed** or **Document exception**. An exception requires a written justification.
 3. Switch back to **Executive overview**. The compliance rate, trend, team table and counts update.
 
-State lives in memory only. Reload the page to reset it.
+Nothing is saved; reload the page to reset it.
+
+| Executive overview | Ticket workbench |
+|---|---|
+| ![Executive overview](media/screenshot-overview.png) | ![Ticket workbench](media/screenshot-workbench.png) |
+
+### 3. Read the POC proposal (5 minutes)
+
+[`docs/POC-proposal.md`](docs/POC-proposal.md) covers:
+- the target state: status-based gates and automated identification and reconciliation
+- where AI may fix things and where people decide
+- the architecture decisions to make
+- known concerns
+- the phased plan
+- what we need to start
 
 ## What it does
 
@@ -94,7 +114,9 @@ Get approval from our security and compliance owners before you run this against
 
 ```
 prototype/index.html            clickable mock-data prototype (single file, no dependencies)
+media/                          walkthrough video, poster and screenshots
 rules/sdlc-rules.example.yaml   example rule definitions (placeholders)
 docs/POC-proposal.md            POC proposal: target state, decisions, concerns, phases
+docs/video-script.md            narration script for the walkthrough video
 docs/                           design notes
 ```
